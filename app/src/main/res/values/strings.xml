@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">EdcastDemo</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+
+    <string name="facebook_app_id">447757568912127</string>
+    <string name="fb_login_protocol_scheme">fb447757568912127</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="login_text">Login</string>
+    <string name="my_profile_text">Social Profile</string>
+    <string name="name_text">Name</string>
+    <string name="email_text">Email</string>
+    <string name="update_text">Update Profile</string>
+    <string name="social_login_demo">Social Login Demo</string>
+    <string name="with_your_social_media_account">with your social media account</string>
+
+    <string name="logout_msg">Are you sure you want to logout?</string>
+    <string name="logout_title">Logout</string>
+    <string name="yes_text">Yes</string>
+    <string name="cancel">Cancel</string>
+    <string name="profile_text">My Profile</string>
+    <string name="friends_text">Friends</string>
+    <string name="name_empty_error">Please enter name</string>
+    <string name="email_empty_error">Please enter email</string>
+    <string name="more_text">More</string>
+    <string name="update_profile_text">Update Profile</string>
+    <string name="network_error">Please check your network connection</string>
+
+</resources>
