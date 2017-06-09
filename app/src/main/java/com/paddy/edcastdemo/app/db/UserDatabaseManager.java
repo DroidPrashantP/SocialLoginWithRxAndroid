@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.paddy.edcastdemo.app.model.User;
 
@@ -74,12 +73,14 @@ public class UserDatabaseManager extends SQLiteOpenHelper {
                 values.put(KEY_PHOTO, user.picture);
                 if (!isUserPresent(user.id)) {
                     mSqLiteDatabase.insert(TABLE_USER, null, values);
-                    msg = "Data inserted Succesfully";
+                    msg = "Data inserted Successfully";
                 } else {
                     msg = "User already Present";
                 }
+
                 emitter.onNext(msg);
-                mSqLiteDatabase.close(); // Closing database connection
+                if (mSqLiteDatabase != null)
+                    mSqLiteDatabase.close(); // Closing database connection
             }
         });
     }
@@ -109,14 +110,19 @@ public class UserDatabaseManager extends SQLiteOpenHelper {
                     }
                     emitter.onNext(user);
                     cursor.close();
+
                 } finally {
                     if (cursor != null) {
                         cursor.close();
                     }
                 }
+                if (db != null) {
+                    db.close();
+                }
 
             }
         });
+
     }
 
     /**
@@ -167,6 +173,10 @@ public class UserDatabaseManager extends SQLiteOpenHelper {
                 boolean isUpdated = db.update(TABLE_USER, values, KEY_ID + "=" + user.id, null) > 0;
                 if (isUpdated)
                     emitter.onNext(user);
+
+                if (db != null) {
+                    db.close();
+                }
             }
         });
     }

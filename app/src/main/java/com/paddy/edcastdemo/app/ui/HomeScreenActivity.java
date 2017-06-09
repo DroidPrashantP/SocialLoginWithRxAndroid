@@ -16,17 +16,18 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 
 import com.paddy.edcastdemo.app.R;
-import com.paddy.edcastdemo.app.model.User;
 import com.paddy.edcastdemo.app.db.UserDatabaseManager;
+import com.paddy.edcastdemo.app.model.User;
 import com.paddy.edcastdemo.app.utils.CommonUse;
-import com.paddy.edcastdemo.app.utils.UserSharePreference;
 import com.paddy.edcastdemo.app.utils.StringUtils;
+import com.paddy.edcastdemo.app.utils.UserSharePreference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,20 +39,17 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
 public class HomeScreenActivity extends AppCompatActivity {
     private static final String TAG = "HomeScreenActivity";
-    private List<String> mTitlesList;
-    private List<Fragment> mFragments;
-    private BottomSheetBehavior mBehavior;
-    private UserSharePreference mUserSharePreference;
-
     @BindView(R.id.bottom_sheet)
     CardView mBottomSheet;
     @BindView(R.id.viewPagerId)
     ViewPager mViewPager;
-
+    private List<String> mTitlesList;
+    private List<Fragment> mFragments;
+    private BottomSheetBehavior mBehavior;
+    private UserSharePreference mUserSharePreference;
     private User mUserSession;
 
     @Override
@@ -200,7 +198,6 @@ public class HomeScreenActivity extends AppCompatActivity {
 
                     @Override
                     public void onNext(User user1) {
-                        Log.d(TAG, "onNext: " + user1.email);
                         mViewPager.getAdapter().notifyDataSetChanged();
                     }
 
@@ -285,4 +282,11 @@ public class HomeScreenActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

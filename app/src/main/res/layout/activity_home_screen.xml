@@ -68,12 +68,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawableLeft="@drawable/ic_logout"
-                    android:drawablePadding="@dimen/padding_small"
+                    android:drawablePadding="@dimen/padding_normal"
                     android:onClick="logoutBtnClick"
                     android:padding="10dp"
                     android:text="@string/logout_title"
+                    android:textSize="@dimen/text_size_large"
                     android:textColor="@color/primary_text"
-                    android:textStyle="bold" />
+                     />
 
                 <TextView
                     android:id="@+id/updateProfile"
@@ -81,12 +82,13 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:drawableLeft="@drawable/ic_update"
-                    android:drawablePadding="@dimen/padding_small"
+                    android:drawablePadding="@dimen/padding_normal"
                     android:onClick="updateProfileClick"
                     android:padding="10dp"
                     android:text="@string/update_profile_text"
                     android:textColor="@color/primary_text"
-                    android:textStyle="bold" />
+                    android:textSize="@dimen/text_size_large"
+                   />
             </LinearLayout>
 
 

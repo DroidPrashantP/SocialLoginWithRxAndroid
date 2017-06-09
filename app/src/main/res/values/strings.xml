@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">EdcastDemo</string>
+    <string name="app_name">SocialLoginDemo</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -38,5 +38,6 @@
     <string name="more_text">More</string>
     <string name="update_profile_text">Update Profile</string>
     <string name="network_error">Please check your network connection</string>
+    <string name="please_share_app_with_your_friends">Please share app with your friends</string>
 
 </resources>

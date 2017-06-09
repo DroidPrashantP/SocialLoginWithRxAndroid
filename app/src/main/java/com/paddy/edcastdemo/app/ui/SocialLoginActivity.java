@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.RelativeLayout;
 
@@ -17,14 +16,14 @@ import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.paddy.edcastdemo.app.R;
-import com.paddy.edcastdemo.app.model.User;
 import com.paddy.edcastdemo.app.db.UserDatabaseManager;
+import com.paddy.edcastdemo.app.model.User;
 import com.paddy.edcastdemo.app.utils.CommonUse;
-import com.paddy.edcastdemo.app.utils.NetworkManager;
-import com.paddy.edcastdemo.app.utils.UserSharePreference;
 import com.paddy.edcastdemo.app.utils.Constants;
+import com.paddy.edcastdemo.app.utils.NetworkManager;
 import com.paddy.edcastdemo.app.utils.ProgressDialog;
 import com.paddy.edcastdemo.app.utils.StringUtils;
+import com.paddy.edcastdemo.app.utils.UserSharePreference;
 
 import org.json.JSONObject;
 
@@ -41,13 +40,12 @@ import timber.log.Timber;
 
 public class SocialLoginActivity extends AppCompatActivity {
     private static final String TAG = "SocialLoginActivity";
-    private CallbackManager mCallbackManager;
-    private UserSharePreference mUserSharePreference;
-
     @BindView(R.id.mainLayoutWrapper)
     RelativeLayout mParentLayout;
     @BindView(R.id.login_button)
     LoginButton mFBLoginButton;
+    private CallbackManager mCallbackManager;
+    private UserSharePreference mUserSharePreference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,26 +107,24 @@ public class SocialLoginActivity extends AppCompatActivity {
             JSONObject json = response.getJSONObject();
             if (json != null) {
                 Timber.d("Response : " + json.toString());
-                if (StringUtils.isNotEmpty(json.optString(Constants.FACEBOOK_EMAIL_ID))) {
-                    mUserSharePreference.setLoggedIn(true);
-                    mUserSharePreference.setUserId(json.optString(Constants.FACEBOOK_ID));
-                    User user = new User();
-                    user.id = json.optString(Constants.FACEBOOK_ID);
-                    user.name = json.optString(Constants.FACEBOOK_NAME);
-                    user.email = json.optString(Constants.FACEBOOK_EMAIL_ID);
-                    user.picture = json.optJSONObject(Constants.FACEBOOK_PROFILE_PIC).optJSONObject(Constants.DATA).getString(Constants.URL_KEY);
-                    user.accessToken = AccessToken.getCurrentAccessToken().getToken();
-                    insertUserDataIntoDB(user);
-                    startActivity(new Intent(SocialLoginActivity.this, HomeScreenActivity.class));
-                    finish();
-                } else {
-                    com.facebook.login.LoginManager.getInstance().logOut();
-                    Timber.e("Facebook email not found");
-                }
+                updatePreferenceData(json);
+                insertUserDataIntoDB(new User(json));
+                startActivity(new Intent(SocialLoginActivity.this, HomeScreenActivity.class));
+                finish();
             }
         } catch (Exception e) {
             Timber.e(e.getMessage());
         }
+    }
+
+    /**
+     * update user local session
+     *
+     * @param json
+     */
+    private void updatePreferenceData(JSONObject json) {
+        mUserSharePreference.setLoggedIn(true);
+        mUserSharePreference.setUserId(json.optString(Constants.FACEBOOK_ID));
     }
 
     /**

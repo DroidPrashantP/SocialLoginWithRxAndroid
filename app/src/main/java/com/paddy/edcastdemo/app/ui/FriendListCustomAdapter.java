@@ -1,18 +1,15 @@
 package com.paddy.edcastdemo.app.ui;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.paddy.edcastdemo.app.R;
 import com.paddy.edcastdemo.app.model.User;
 import com.paddy.edcastdemo.app.utils.CircularNetworkImageView;
-import com.paddy.edcastdemo.app.utils.StringUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

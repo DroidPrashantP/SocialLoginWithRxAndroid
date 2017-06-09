@@ -13,8 +13,6 @@ import java.util.List;
 
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
-    private static final String TAG = ViewPagerAdapter.class.getSimpleName();
-
     private List<Fragment> mFragments;
     private List<String> mTabTitles;
 
@@ -31,7 +29,13 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getItemPosition(Object object) {
-        return POSITION_NONE;
+        if (object instanceof UserInfoFragment) {
+            UserInfoFragment f = (UserInfoFragment) object;
+            if (f != null) {
+                f.update();
+            }
+        }
+        return super.getItemPosition(object);
     }
 
     @Override

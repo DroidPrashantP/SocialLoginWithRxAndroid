@@ -4,18 +4,17 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.paddy.edcastdemo.app.R;
-import com.paddy.edcastdemo.app.model.User;
 import com.paddy.edcastdemo.app.db.UserDatabaseManager;
+import com.paddy.edcastdemo.app.model.User;
 import com.paddy.edcastdemo.app.utils.CircularNetworkImageView;
 import com.paddy.edcastdemo.app.utils.StringUtils;
+import com.paddy.edcastdemo.app.utils.UpdateUserInfo;
 import com.paddy.edcastdemo.app.utils.UserSharePreference;
 import com.squareup.picasso.Picasso;
 
@@ -25,9 +24,10 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 
-public class UserInfoFragment extends Fragment {
+public class UserInfoFragment extends Fragment implements UpdateUserInfo {
     private static final String TAG = "UserInfoFragment";
     @BindView(R.id.pictureView)
     CircularNetworkImageView mPicture;
@@ -79,7 +79,7 @@ public class UserInfoFragment extends Fragment {
 
                     @Override
                     public void onError(Throwable e) {
-                        Log.d(TAG, "onError: " + e.getMessage());
+                        Timber.e("onError: " + e.getMessage());
                     }
 
                     @Override
@@ -100,4 +100,10 @@ public class UserInfoFragment extends Fragment {
         super.onDetach();
 
     }
+
+    @Override
+    public void update() {
+        updateProfileCard();
+    }
+
 }

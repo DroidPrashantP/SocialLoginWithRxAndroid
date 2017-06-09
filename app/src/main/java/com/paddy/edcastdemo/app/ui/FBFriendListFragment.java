@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,16 +15,15 @@ import com.facebook.GraphResponse;
 import com.paddy.edcastdemo.app.R;
 import com.paddy.edcastdemo.app.model.User;
 import com.paddy.edcastdemo.app.utils.Constants;
+import com.paddy.edcastdemo.app.utils.JSONUtil;
 import com.paddy.edcastdemo.app.utils.ProgressDialog;
 import com.paddy.edcastdemo.app.utils.UserSharePreference;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.reactivestreams.Subscriber;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -36,11 +34,14 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class FBFriendListFragment extends Fragment {
     private static final String TAG = "FBFriendListFragment";
     @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
+    @BindView(R.id.emptyView)
+    View mEmptyView;
     private FriendListCustomAdapter mFriendListCustomAdapter;
 
     @Override
@@ -60,59 +61,62 @@ public class FBFriendListFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         setRecyclerView();
-        //setUpList();
-        getFriendList();
+        getRequestForFriendList();
 
+    }
+
+    /**
+     * setup list view
+     */
+    private void setRecyclerView() {
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.setHasFixedSize(true);
+        mFriendListCustomAdapter = new FriendListCustomAdapter(new ArrayList<User>(), getActivity());
+        mRecyclerView.setAdapter(mFriendListCustomAdapter);
     }
 
     /**
      * get friend List
      */
-    private void getFriendList() {
+    private void getRequestForFriendList() {
         ProgressDialog.showProgress(getActivity(), true);
-        Observable<List<User>> fetchFBFriendList = Observable.create(new ObservableOnSubscribe<List<User>>() {
+        final String url = "/" + new UserSharePreference(getActivity()).getUserId() + "/friends";
+        Observable<GraphResponse> fetchFBFriendList = Observable.create(new ObservableOnSubscribe<GraphResponse>() {
             @Override
-            public void subscribe(final ObservableEmitter<List<User>> emitter) throws Exception {
+            public void subscribe(final ObservableEmitter<GraphResponse> emitter) throws Exception {
                 GraphRequest request = GraphRequest.newGraphPathRequest(
-                        AccessToken.getCurrentAccessToken(),
-                        "/" + new UserSharePreference(getActivity()).getUserId() + "/friends",
+                        AccessToken.getCurrentAccessToken(), url
+                        ,
                         new GraphRequest.Callback() {
                             @Override
                             public void onCompleted(GraphResponse response) {
                                 ProgressDialog.closeProgress();
-                                // Insert your code here
-                                try {
-                                    JSONObject jsonObject = response.getJSONObject();
-                                    if (jsonObject != null) {
-                                        JSONArray data = jsonObject.getJSONArray(Constants.DATA);
-                                        if (data != null && data.length() > 0) {
-                                        }
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                                Log.d(TAG, "getFriendList: " + response.getJSONObject());
+                                emitter.onNext(response);
                             }
                         });
+                Bundle parameters = new Bundle();
+                parameters.putString(Constants.FIELDS, Constants.FACEBOOK_PARAM_KEYS);
+                request.setParameters(parameters);
                 request.executeAsync();
             }
         });
 
         fetchFBFriendList.subscribeOn(Schedulers.newThread()) // Create a new Thread
                 .observeOn(AndroidSchedulers.mainThread()) // Use the UI thread
-                .subscribe(new Observer<List<User>>() {
+                .subscribe(new Observer<GraphResponse>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-
                     }
 
                     @Override
-                    public void onNext(List<User> users) {
+                    public void onNext(GraphResponse response) {
                         ProgressDialog.closeProgress();
+                        parseFriendsListData(response);
                     }
 
                     @Override
                     public void onError(Throwable e) {
+                        Timber.e(e.getMessage());
                         ProgressDialog.closeProgress();
                     }
 
@@ -123,39 +127,50 @@ public class FBFriendListFragment extends Fragment {
                 });
     }
 
-    private void setUpList() {
-        ArrayList<User> list = new ArrayList<>();
+    /**
+     * parse friends list data
+     *
+     * @param response
+     */
+    private void parseFriendsListData(GraphResponse response) {
+        try {
+            JSONObject jsonObject = response.getJSONObject();
+            if (jsonObject != null) {
+                JSONArray data = JSONUtil.getJSONArray(jsonObject, Constants.DATA);
+                ArrayList<User> userArrayList = new ArrayList<>();
+                if (data != null && data.length() > 0) {
+                    isDataAvailable(true);
+                    for (int i = 0; i < data.length(); i++) {
+                        User user = new User(data.getJSONObject(i));
+                        userArrayList.add(user);
+                    }
+                    // update list
+                    if (mFriendListCustomAdapter != null) {
+                        mFriendListCustomAdapter.updateList(userArrayList);
+                    }
 
-        User user1 = new User();
-        user1.id = "1";
-        user1.name = "Prashant";
-        user1.email = "1abc@gmail.com";
-        user1.picture = "https://www.planwallpaper.com/static/images/desktop-year-of-the-tiger-images-wallpaper.jpg";
-
-        User user2 = new User();
-        user2.name = "Patil";
-        user2.id = "2";
-        user2.email = "2abc@gmail.com";
-        user2.picture = "https://www.planwallpaper.com/static/images/desktop-year-of-the-tiger-images-wallpaper.jpg";
-
-        User user3 = new User();
-        user3.name = "Parola";
-        user3.id = "3";
-        user3.email = "3abc@gmail.com";
-        user3.picture = "https://www.planwallpaper.com/static/images/desktop-year-of-the-tiger-images-wallpaper.jpg";
-
-        list.add(user1);
-        list.add(user2);
-        list.add(user3);
-
-        mFriendListCustomAdapter.updateList(list);
-
+                } else {
+                    isDataAvailable(false);
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Timber.e(e.getMessage());
+        }
     }
 
-    private void setRecyclerView() {
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mRecyclerView.setHasFixedSize(true);
-        mFriendListCustomAdapter = new FriendListCustomAdapter(new ArrayList<User>(), getActivity());
-        mRecyclerView.setAdapter(mFriendListCustomAdapter);
+    /**
+     * show and hide view
+     *
+     * @param isDataPresent
+     */
+    public void isDataAvailable(boolean isDataPresent) {
+        if (isDataPresent) {
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mEmptyView.setVisibility(View.GONE);
+        } else {
+            mRecyclerView.setVisibility(View.GONE);
+            mEmptyView.setVisibility(View.VISIBLE);
+        }
     }
 }

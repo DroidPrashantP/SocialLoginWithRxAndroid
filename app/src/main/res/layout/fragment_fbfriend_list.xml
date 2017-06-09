@@ -9,5 +9,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingLeft="@dimen/padding_normal"
-        android:paddingRight="@dimen/padding_normal"></android.support.v7.widget.RecyclerView>
+        android:paddingRight="@dimen/padding_normal"
+        android:visibility="gone"></android.support.v7.widget.RecyclerView>
+
+    <include
+        android:id="@+id/emptyView"
+        layout="@layout/layout_empty_view" />
+
 </RelativeLayout>
